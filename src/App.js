@@ -1,55 +1,26 @@
-import React, { useState } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import React from "react";
+import "./App.css";
 import Header from "./components/Header";
-import Home from "./components/Home";
-import Base from "./components/Base";
-import Toppings from "./components/Toppings";
-import Order from "./components/Order";
-import { AnimatePresence } from "framer-motion";
-
+import Game from "./components/Game";
 function App() {
-  const [pizza, setPizza] = useState({ base: "", toppings: [] });
-  const addBase = (base) => {
-    setPizza({ ...pizza, base });
+  const [value, setValue] = React.useState("X");
+  const toggleValue = () => {
+    setValue((prev) => (prev == "X" ? "O" : "X"));
   };
-
-  const addTopping = (topping) => {
-    let newToppings;
-    if (!pizza.toppings.includes(topping)) {
-      newToppings = [...pizza.toppings, topping];
-    } else {
-      newToppings = pizza.toppings.filter((item) => item !== topping);
-    }
-    setPizza({ ...pizza, toppings: newToppings });
+  const [gameOver, setGameOver] = React.useState(false);
+  const setGameIsOver = () => {
+    setGameOver(false);
   };
-
-  const [modle, showModle] = React.useState(false);
-  const location = useLocation();
-  console.log(location);
   return (
-    <>
+    <div>
       <Header />
-      <Switch location={location} key={location.key}>
-        <Switch
-          exact
-          path="/base"
-          component={<Base addBase={addBase} pizza={pizza} />}
-        />
-        <Route
-          exact
-          path="/toppings"
-          component={<Toppings addTopping={addTopping} pizza={pizza} />}
-        />
-        <Route
-          exact
-          path="/order"
-          component={
-            <Order pizza={pizza} modle={modle} showModle={showModle} />
-          }
-        />
-        <Route path="/pizza-joint" component={<Home />} />
-      </Switch>
-    </>
+      <Game
+        value={value}
+        toggleValue={toggleValue}
+        isGameOver={gameOver}
+        addGameOver={setGameIsOver}
+      />
+    </div>
   );
 }
 
