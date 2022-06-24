@@ -1,13 +1,19 @@
-import Board from "./Board";
-import { board } from "./Board";
-let Value = new Map([
+import React from "react";
+import Board, { cellObj } from "./Board";
+import { getAiMove } from "./Ai.js";
+export let Value = new Map([
   ["playerScore", 10],
   ["opponentScore", -10],
   ["maxValue", 1000],
   [("minValue", -1000)],
 ]);
+export const board = [
+  ["", "", ""],
+  ["", "", ""],
+  ["", "", ""],
+];
 //checks whether moves are left or not
-const isMovesLeft = (board) => {
+export const isMovesLeft = (board) => {
   for (let i = 0; i < 3; i++)
     for (let j = 0; j < 3; j++) if (board[i][j] == "") return true;
   return false;
@@ -16,49 +22,104 @@ const isMovesLeft = (board) => {
 const isEqual3 = (a, b, c) => a === b && b === c && c !== "";
 
 //checks the winner Element
-const checkWinner = (board) => {
-  console.log(board);
-  let score = 0;
+export const checkWinner = (board) => {
   // checking horizontal
   for (let i = 0; i < board.length; i++) {
     if (isEqual3(board[i][0], board[i][1], board[i][2])) {
-      // addResulteSyles(i, 0, true, false, false);
+      addResulteSyles(i, 0, true, false, false);
       return board[i][0];
     }
   }
   //checking veritically
   for (let i = 0; i < board.length; i++) {
     if (isEqual3(board[0][i], board[1][i], board[2][i])) {
-      // addResulteSyles(0, i, false, false, false);
+      addResulteSyles(0, i, false, false, false);
       return board[0][i];
     }
   }
   //checking diagonal left
   if (isEqual3(board[0][0], board[1][1], board[2][2])) {
+    addResulteSyles(0, 0, false, true, false);
     return board[0][0];
   }
   //checking diagonal right
   if (isEqual3(board[0][2], board[1][1], board[2][0])) {
-    //   addResulteSyles(0, 0, false, false, true);
+    addResulteSyles(0, 0, false, false, true);
     return board[0][2];
   }
   //checking game is over or not
   if (!isMovesLeft(board)) return "tie";
   return null;
 };
-import React from "react";
+//adding styles to winner elements
+let addResulteSyles = (
+  row,
+  col,
+  isHorizontal,
+  isDaigonalLeft,
+  isDaigonalRightl
+) => {
+  for (
+    let i = 0;
+    i < board.length && !isDaigonalRightl && !isDaigonalLeft;
+    i++
+  ) {
+    let id = isHorizontal ? row * board.length + i : i * board.length + col;
+    let cell = document.getElementById("cell" + id);
+    cell.classList.add("winner");
+  }
+  if (isDaigonalLeft) {
+    for (let i = 0; i <= 9; i++) {
+      let id = i;
+      i += 3;
+      let cell = document.getElementById("cell" + id);
+      cell.classList.add("winner");
+    }
+    return;
+  }
+  if (isDaigonalRightl) {
+    for (let i = 2; i <= 7; ) {
+      let id = i;
+      i += 2;
+      let cell = document.getElementById("cell" + id);
+      cell.classList.add("winner");
+    }
+  }
+};
 
 function Game({ value, toggleValue }) {
-  const [winner, setWinner] = React.useState(null);
-  const winValue = checkWinner(board);
-  React.useEffect(() => {
-    setWinner(winValue);
-  }, [winValue]);
+  const [addAi, setAiMode] = React.useState(true);
+  const [cells, setCells] = React.useState({ ...cellObj });
   console.log(winner);
-
+  const winner = checkWinner(board);
+  const addValue = (cell_Id) => {
+    if (winner == "X" || winner == "O" || winner == "tie") return;
+    if (cells[cell_Id] !== "") return;
+    let row = Math.trunc(cell_Id.charAt(4) / board.length);
+    let col = cell_Id.charAt(4) % board.length;
+    board[row][col] = "X";
+    setCells((prevCellValue) => ({
+      ...prevCellValue,
+      [cell_Id]: "X",
+    }));
+    // toggleValue();
+    let aimove = getAiMove(board);
+    addAi && AiValue(aimove);
+  };
+  const AiValue = (cell_Id) => {
+    if (winner == "X" || winner == "O" || winner == "tie") return;
+    if (cells[cell_Id] !== "") return;
+    let row = Math.trunc(cell_Id.charAt(4) / board.length);
+    let col = cell_Id.charAt(4) % board.length;
+    board[row][col] = "O";
+    setCells((prevCellValue) => ({
+      ...prevCellValue,
+      [cell_Id]: "O",
+    }));
+  };
   return (
     <>
-      <Board value={value} toggleValue={toggleValue} winner={winner} />
+      <Board I cells={cells} addValue={addValue} />
     </>
   );
 }
