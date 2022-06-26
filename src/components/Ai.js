@@ -1,5 +1,4 @@
-import React from "react";
-import { checkWinner, Value, isMovesLeft } from "./Game";
+import { checkWinner, Value, isMovesLeft, cellContainer } from "./Game";
 
 class Move {
   constructor() {
@@ -61,7 +60,7 @@ function minimax(board, depth, isMax) {
     }
     return best;
   } else {
-    let best = 1000;
+    let best = Infinity;
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         if (board[i][j] == "") {
@@ -75,7 +74,7 @@ function minimax(board, depth, isMax) {
   }
 }
 function findBestMove(board) {
-  let bestVal = -1000;
+  let bestVal = -Infinity;
   let bestMove = new Move();
   bestMove.row = -1;
   bestMove.col = -1;
@@ -95,11 +94,30 @@ function findBestMove(board) {
   }
   return bestMove;
 }
-
-let getAiMove = (board) => {
+const findEmptyCells = (board) => {
+  let result = [];
+  for (let row = 0; row < 3; row++)
+    for (let col = 0; col < 3; col++) {
+      if (board[row][col] == "") result.push(row * 3 + col);
+    }
+  return result;
+};
+const getBestMove = (board) => {
   let aiBoardIndex = findBestMove(board);
   let id = aiBoardIndex.row * 3 + aiBoardIndex.col;
   return "cell" + id;
+};
+const getRandomMove = (board) => {
+  const EmptyCells = findEmptyCells(board);
+  let randomIndex = Math.floor(Math.random() * EmptyCells.length);
+  console.log("cell" + EmptyCells[randomIndex]);
+  return "cell" + EmptyCells[randomIndex];
+};
+let getAiMove = (board) => {
+  const randomMoveOdds = Math.floor(Math.random() * 101);
+  const AiMove =
+    80 > randomMoveOdds ? getBestMove(board) : getRandomMove(board);
+  return AiMove;
 };
 
 export { getAiMove, checkWinner };

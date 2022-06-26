@@ -3,6 +3,7 @@ import X from "./svg/val-X";
 import O from "./svg/val-O";
 import Background from "./svg/Background";
 import "./Board.scss";
+import { board } from "./Game";
 export const cellObj = {
   cell0: "",
   cell1: "",

@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Board, { cellObj } from "./Board";
 import { getAiMove } from "./Ai.js";
+import "./Game.scss";
+
 export let Value = new Map([
   ["playerScore", 10],
   ["opponentScore", -10],
@@ -86,27 +88,27 @@ let addResulteSyles = (
     }
   }
 };
-
-function Game({ value, toggleValue }) {
-  const [addAi, setAiMode] = React.useState(true);
+export let cellContainer = "";
+function Game({ value, toggleValue, aiTurn }) {
   const [cells, setCells] = React.useState({ ...cellObj });
-  console.log(winner);
   const winner = checkWinner(board);
+
   const addValue = (cell_Id) => {
     if (winner == "X" || winner == "O" || winner == "tie") return;
     if (cells[cell_Id] !== "") return;
     let row = Math.trunc(cell_Id.charAt(4) / board.length);
     let col = cell_Id.charAt(4) % board.length;
-    board[row][col] = "X";
+    board[row][col] = aiTurn ? "X" : value;
     setCells((prevCellValue) => ({
       ...prevCellValue,
-      [cell_Id]: "X",
+      [cell_Id]: aiTurn ? "X" : value,
     }));
-    // toggleValue();
-    let aimove = getAiMove(board);
-    addAi && AiValue(aimove);
+    if (aiTurn) {
+      let aiMove = getAiMove(board);
+      addAiValue(aiMove);
+    } else toggleValue();
   };
-  const AiValue = (cell_Id) => {
+  const addAiValue = (cell_Id) => {
     if (winner == "X" || winner == "O" || winner == "tie") return;
     if (cells[cell_Id] !== "") return;
     let row = Math.trunc(cell_Id.charAt(4) / board.length);
@@ -119,7 +121,14 @@ function Game({ value, toggleValue }) {
   };
   return (
     <>
-      <Board I cells={cells} addValue={addValue} />
+      <Board cells={cells} addValue={addValue} />
+      <button
+        className="game--restart"
+        id="gameRestart"
+        onClick={() => location.reload()}
+      >
+        Restart Game
+      </button>
     </>
   );
 }

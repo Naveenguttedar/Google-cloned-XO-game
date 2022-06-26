@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-function Header() {
+function Header({ player, setPlayer }) {
   return (
     <HeaderContainer>
       <h1 className="game--title">Tic Tac Toe</h1>
@@ -12,10 +12,18 @@ function Header() {
           name="player"
           id="player"
           value="player"
-          defaultChecked="checked"
+          checked={player.person}
+          onChange={() => setPlayer()}
         />
         player
-        <input type="radio" name="player" id="Ai" value="Ai" />
+        <input
+          type="radio"
+          name="player"
+          id="Ai"
+          value="Ai"
+          checked={player.Ai}
+          onChange={() => setPlayer()}
+        />
         Ai
       </div>
     </HeaderContainer>
