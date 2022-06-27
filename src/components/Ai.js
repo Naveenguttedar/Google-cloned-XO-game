@@ -1,11 +1,11 @@
-import { checkWinner, Value, isMovesLeft, cellContainer } from "./Game";
+import { Value, isMovesLeft } from "./Game";
 
 class Move {
   constructor() {
     let row, col;
   }
 }
-
+// Its the gamePlay of AI so player will be playing 'O' and opponent (person ) playing 'X' hence ..
 let player = "O",
   opponent = "X";
 function evaluate(b) {
@@ -110,7 +110,6 @@ const getBestMove = (board) => {
 const getRandomMove = (board) => {
   const EmptyCells = findEmptyCells(board);
   let randomIndex = Math.floor(Math.random() * EmptyCells.length);
-  console.log("cell" + EmptyCells[randomIndex]);
   return "cell" + EmptyCells[randomIndex];
 };
 let getAiMove = (board) => {
@@ -119,5 +118,16 @@ let getAiMove = (board) => {
     80 > randomMoveOdds ? getBestMove(board) : getRandomMove(board);
   return AiMove;
 };
-
-export { getAiMove, checkWinner };
+const addAiValue = (board, winner, cells, setCells) => {
+  let cell_Id = getAiMove(board);
+  if (winner == "X" || winner == "O" || winner == "tie") return;
+  if (cells[cell_Id] !== "") return;
+  let row = Math.trunc(cell_Id.charAt(4) / board.length);
+  let col = cell_Id.charAt(4) % board.length;
+  board[row][col] = "O";
+  setCells((prevCellValue) => ({
+    ...prevCellValue,
+    [cell_Id]: "O",
+  }));
+};
+export { addAiValue };
